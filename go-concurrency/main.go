@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-	"sync"
-	"sync/atomic"
+	"time"
 )
 
 // 1. Batch File Processor
@@ -59,26 +58,26 @@ import (
 // Primitive to use: sync/atomic package functions (e.g., atomic.AddUint64).
 
 // Solution
-var totalRequests uint64
+// var totalRequests uint64
 
-func handleRequest(wg *sync.WaitGroup) {
-	defer wg.Done()
-	for range 100 { // Equivalent to for i := range 100, 0 to 99
-		atomic.AddUint64(&totalRequests, 1)
-	}
-}
+// func handleRequest(wg *sync.WaitGroup) {
+// 	defer wg.Done()
+// 	for range 100 { // Equivalent to for i := range 100, 0 to 99
+// 		atomic.AddUint64(&totalRequests, 1)
+// 	}
+// }
 
-func main() {
-	var wg sync.WaitGroup
-	for range 1000 {
-		wg.Add(1)
-		go handleRequest(&wg)
-	}
+// func main() {
+// 	var wg sync.WaitGroup
+// 	for range 1000 {
+// 		wg.Add(1)
+// 		go handleRequest(&wg)
+// 	}
 
-	wg.Wait()
+// 	wg.Wait()
 
-	fmt.Printf("%d\n", totalRequests)
-}
+// 	fmt.Printf("%d\n", totalRequests)
+// }
 
 // 3. Task Queue Worker Pool
 // Goal: Practice using channels to create a fixed-size worker pool for distributing jobs.
@@ -94,6 +93,38 @@ func main() {
 // The main function must read all 50 results from the results channel and print them.
 // Ensure your workers stop running once all jobs are complete (Hint: close the jobs channel).
 // Primitive to use: channels
+
+// Solution
+func worker(jobs <-chan int, results chan<- int) { // The channel types point if we're going to read or write
+	for job := range jobs {
+		time.Sleep(500 * time.Millisecond)
+		results <- job * job
+	}
+}
+
+func main() {
+	// Create the channels
+	jobs := make(chan int, 50)
+	results := make(chan int, 50)
+
+	// Create the jobs
+	for i := 1; i <= 50; i++ {
+		jobs <- i // Writing in the channel
+	}
+	// Close the jobs channel when it's done
+	close(jobs)
+
+	// Only 4 workers
+	for i := 4; i <= 4; i++ {
+		go worker(jobs, results) // Receives the current number, the jobs and the results channels
+	}
+
+	// Read results and print
+	for i := 1; i <= 50; i++ {
+		result := <-results
+		fmt.Printf("Result: %d\n", result)
+	}
+}
 
 // 4. Service with Graceful Shutdown (Using OS Signals)
 // Goal: Practice using channels, the select statement, and the os/signal package to handle system interrupts.

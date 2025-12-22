@@ -1,10 +1,5 @@
 package main
 
-import (
-	"fmt"
-	"time"
-)
-
 // 1. Batch File Processor
 // Goal: Practice using sync.WaitGroup to manage a batch of independent tasks.
 // Problem: You have a list of 100 file paths (e.g., ["file_1.pdf", "file_2.pdf", ...]). You need to "process" all of them.
@@ -95,36 +90,36 @@ import (
 // Primitive to use: channels
 
 // Solution
-func worker(jobs <-chan int, results chan<- int) { // The channel types point if we're going to read or write
-	for job := range jobs {
-		time.Sleep(500 * time.Millisecond)
-		results <- job * job
-	}
-}
+// func worker(jobs <-chan int, results chan<- int) { // The channel types point if we're going to read or write
+// 	for job := range jobs {
+// 		time.Sleep(500 * time.Millisecond)
+// 		results <- job * job
+// 	}
+// }
 
-func main() {
-	// Create the channels
-	jobs := make(chan int, 50)
-	results := make(chan int, 50)
+// func main() {
+// 	// Create the channels
+// 	jobs := make(chan int, 50)
+// 	results := make(chan int, 50)
 
-	// Create the jobs
-	for i := 1; i <= 50; i++ {
-		jobs <- i // Writing in the channel
-	}
-	// Close the jobs channel when it's done
-	close(jobs)
+// 	// Create the jobs
+// 	for i := 1; i <= 50; i++ {
+// 		jobs <- i // Writing in the channel
+// 	}
+// 	// Close the jobs channel when it's done
+// 	close(jobs)
 
-	// Only 4 workers
-	for i := 4; i <= 4; i++ {
-		go worker(jobs, results) // Receives the current number, the jobs and the results channels
-	}
+// 	// Only 4 workers
+// 	for i := 4; i <= 4; i++ {
+// 		go worker(jobs, results) // Receives the current number, the jobs and the results channels
+// 	}
 
-	// Read results and print
-	for i := 1; i <= 50; i++ {
-		result := <-results
-		fmt.Printf("Result: %d\n", result)
-	}
-}
+// 	// Read results and print
+// 	for i := 1; i <= 50; i++ {
+// 		result := <-results
+// 		fmt.Printf("Result: %d\n", result)
+// 	}
+// }
 
 // 4. Service with Graceful Shutdown (Using OS Signals)
 // Goal: Practice using channels, the select statement, and the os/signal package to handle system interrupts.

@@ -141,3 +141,16 @@ package main
 // After launching the service goroutine and the signal-handling goroutine, the main goroutine should call wg.Wait(). This will block main until the service has received the stop signal and has shut down (i.e., its wg.Done() is called).
 // After wg.Wait() returns, main should print "Application shut down gracefully."
 // Primitives/Packages to use: channels, select, sync.WaitGroup, os/signal, time
+
+// Concurrency patterns training
+// 1. Worker pools
+// Distributes tasks across multiples goroutines
+func worker(id int, jobs <-chan int, results chan<- int) {
+	for job := range jobs {
+		results <- job * 2 // simulate task process
+	}
+}
+func main() {
+	jobs, results := make(chan int, 100), make(chan int, 100)
+
+}
